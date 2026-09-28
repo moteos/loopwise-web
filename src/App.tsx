@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
+import Insights from './pages/Insights'
 import { useLocation } from './router'
 
 export default function App() {
@@ -26,7 +27,7 @@ export default function App() {
       </a>
       <Header />
       <main id="main">
-        <Home />
+        {pathname === '/insights' ? <Insights /> : <Home />}
       </main>
       <Footer />
     </>

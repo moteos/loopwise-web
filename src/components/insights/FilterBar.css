@@ -1,0 +1,108 @@
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.filter-bar__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.filter-bar__label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--charcoal-500);
+}
+
+/* Same pill shape as the export slot on the Insights page. */
+.filter-bar__control {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  color: var(--charcoal);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.filter-bar__control:hover {
+  border-color: var(--charcoal-400);
+}
+
+/*
+ * Focus stays visible without relying on colour alone: the ring is a thick
+ * outline separated by an offset, and the control also gains a border and
+ * shadow change, so keyboard focus is legible even in monochrome.
+ */
+.filter-bar__control:focus-visible {
+  outline: 3px solid var(--indigo-600);
+  outline-offset: 2px;
+  border-color: var(--indigo-700);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-bar__actions {
+  margin-inline-start: auto;
+}
+
+.filter-bar__actions .btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.filter-bar__actions .btn:disabled:hover {
+  border-color: var(--line-strong);
+  background: transparent;
+}
+
+.filter-bar__error {
+  flex-basis: 100%;
+  color: var(--coral-600);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+/* A shape cue, not just colour, so the message reads as an alert. */
+.filter-bar__error::before {
+  content: '! ';
+  font-weight: var(--weight-bold);
+}
+
+/* Matches the breakpoint used on the Insights page. */
+@media (max-width: 640px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+
+  .filter-bar__field {
+    width: 100%;
+  }
+
+  .filter-bar__control {
+    width: 100%;
+  }
+
+  .filter-bar__actions {
+    margin-inline-start: 0;
+  }
+
+  .filter-bar__actions .btn {
+    width: 100%;
+  }
+}
