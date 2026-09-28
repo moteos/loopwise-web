@@ -3,12 +3,21 @@ import './Pricing.css'
 type Plan = {
   name: string
   price: number
+  includes: string
 }
 
 const PLANS: Plan[] = [
-  { name: 'Starter', price: 49 },
-  { name: 'Team', price: 99 },
-  { name: 'Business', price: 249 },
+  { name: 'Starter', price: 49, includes: 'One workspace, three sources' },
+  {
+    name: 'Team',
+    price: 99,
+    includes: 'Unlimited sources, Roadmap Autopilot, Close the Loop',
+  },
+  {
+    name: 'Business',
+    price: 249,
+    includes: 'Everything in Team, priority support and onboarding',
+  },
 ]
 
 export default function Pricing() {
@@ -32,6 +41,7 @@ export default function Pricing() {
                 </span>
                 <span className="price-card__period">/mo</span>
               </p>
+              <p className="price-card__includes">{plan.includes}</p>
               {/* TODO: point at the real waitlist form once signup is live. */}
               <a className="btn btn--secondary price-card__cta" href="#waitlist">
                 Join the waitlist
@@ -39,6 +49,10 @@ export default function Pricing() {
             </li>
           ))}
         </ul>
+
+        <p className="pricing__note">
+          Prices are per team, not per seat. Annual billing saves two months.
+        </p>
       </div>
     </section>
   )
