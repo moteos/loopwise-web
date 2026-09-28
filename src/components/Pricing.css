@@ -81,3 +81,17 @@
     margin-top: var(--space-5);
   }
 }
+
+.price-card__includes {
+  margin: 0;
+  color: var(--charcoal-600);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.pricing__note {
+  margin: 1.5rem 0 0;
+  text-align: center;
+  color: var(--charcoal-600);
+  font-size: 0.875rem;
+}
