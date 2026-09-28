@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { Grain } from '../data/feedback'
 import { loadFeedback } from '../data/feedback'
 import type { FilterState } from '../lib/insights/filter'
 import {
@@ -7,12 +8,33 @@ import {
   isDateBound,
 } from '../lib/insights/filter'
 import { summarizeByTheme } from '../lib/insights/summarize'
+import {
+  DEFAULT_COLUMN_SELECTION,
+  FEEDBACK_ITEM_COLUMNS,
+  THEME_SUMMARY_COLUMNS,
+  defaultColumns,
+} from '../lib/insights/columns'
+import { buildExport } from '../lib/insights/export'
+import { downloadCsv } from '../lib/insights/download'
 import FilterBar from '../components/insights/FilterBar'
+import InsightsExport from '../components/insights/InsightsExport'
+import type { ExportFeedback } from '../components/insights/InsightsExport'
+import ColumnPicker from '../components/insights/ColumnPicker'
 import './Insights.css'
 
-export default function Insights() {
+interface InsightsProps {
+  onDownload?: (filename: string, content: string) => void
+}
+
+const PICKER_ID = 'insights-column-picker'
+
+export default function Insights({ onDownload = downloadCsv }: InsightsProps) {
   const loaded = useMemo(() => loadFeedback(), [])
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
+  const [grain, setGrain] = useState<Grain>('theme-summary')
+  const [columns, setColumns] = useState(DEFAULT_COLUMN_SELECTION)
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [feedback, setFeedback] = useState<ExportFeedback | null>(null)
   const [dateError, setDateError] = useState<string | null>(null)
 
   const filtered = useMemo(
@@ -25,6 +47,18 @@ export default function Insights() {
     () => summaries.reduce((max, summary) => Math.max(max, summary.mentions), 0),
     [summaries],
   )
+
+  // Focus returns to the [Choose columns] trigger once the panel closes.
+  const clusterRef = useRef<HTMLDivElement>(null)
+  const wasPickerOpen = useRef(false)
+  useEffect(() => {
+    if (wasPickerOpen.current && !pickerOpen) {
+      clusterRef.current
+        ?.querySelector<HTMLButtonElement>(`[aria-controls="${PICKER_ID}"]`)
+        ?.focus()
+    }
+    wasPickerOpen.current = pickerOpen
+  }, [pickerOpen])
 
   const handleFiltersChange = (next: FilterState) => {
     // Date bounds are the only user input with a parse rule. A native date
@@ -40,17 +74,70 @@ export default function Insights() {
     }
     setDateError(null)
     setFilters(next)
+    // The export confirmation is a statement about the previous result set:
+    // it persists until the next filter change or export (prototype 4.4.3).
+    setFeedback(null)
   }
 
   const handleClear = () => {
     setFilters(DEFAULT_FILTERS)
     setDateError(null)
+    setFeedback(null)
+  }
+
+  const handleToggleColumn = (grainKey: Grain, key: string) => {
+    // DEFAULT_COLUMN_SELECTION holds shared array references, so never mutate:
+    // always hand back a fresh object and a fresh array.
+    setColumns((previous) => {
+      const current = previous[grainKey]
+      const next = current.includes(key)
+        ? current.filter((candidate) => candidate !== key)
+        : [...current, key]
+      return { ...previous, [grainKey]: next }
+    })
+  }
+
+  const handleResetColumns = () => {
+    setColumns((previous) => ({
+      ...previous,
+      [grain]: defaultColumns(grain),
+    }))
+  }
+
+  const handleExport = () => {
+    try {
+      const result = buildExport({
+        items: loaded.items,
+        filters,
+        grain,
+        columnKeys: columns[grain],
+        now: new Date(),
+      })
+      onDownload(result.filename, result.content)
+      setFeedback(
+        filtered.length === 0
+          ? { kind: 'empty', filename: result.filename }
+          : { kind: 'success', filename: result.filename },
+      )
+    } catch (error) {
+      setFeedback({
+        kind: 'error',
+        message: error instanceof Error ? error.message : 'Export failed.',
+      })
+    }
   }
 
   const caption =
     summaries.length > 0
       ? `The ${summaries.length} most-mentioned themes in this view.`
       : '0 items and 0 themes in this view.'
+
+  const rowCount =
+    grain === 'theme-summary' ? summaries.length : filtered.length
+  const totalColumnCount =
+    grain === 'theme-summary'
+      ? THEME_SUMMARY_COLUMNS.length
+      : FEEDBACK_ITEM_COLUMNS.length
 
   return (
     <div className="insights section">
@@ -68,6 +155,23 @@ export default function Insights() {
           onChange={handleFiltersChange}
           onClear={handleClear}
         />
+
+        {/* The export cluster follows the filter bar so the DOM order matches
+            the declared focus order: filters, then grain and export. */}
+        <div className="insights__export-row" ref={clusterRef}>
+          <InsightsExport
+            grain={grain}
+            onGrainChange={setGrain}
+            selectedColumnKeys={columns[grain]}
+            totalColumnCount={totalColumnCount}
+            onChooseColumns={() => setPickerOpen(true)}
+            pickerOpen={pickerOpen}
+            pickerId={PICKER_ID}
+            onExport={handleExport}
+            rowCount={rowCount}
+            feedback={feedback}
+          />
+        </div>
 
         {loaded.dropped > 0 && (
           <p className="insights__notice">
@@ -127,12 +231,23 @@ export default function Insights() {
               <p>
                 Widen the date range or clear a filter to see the themes again.
               </p>
+              <p>An export now downloads a header row only.</p>
             </div>
           )}
         </div>
 
         <p className="insights__caption">{caption}</p>
       </div>
+
+      <ColumnPicker
+        open={pickerOpen}
+        grain={grain}
+        columns={columns}
+        onToggle={handleToggleColumn}
+        onReset={handleResetColumns}
+        onClose={() => setPickerOpen(false)}
+        id={PICKER_ID}
+      />
     </div>
   )
 }
