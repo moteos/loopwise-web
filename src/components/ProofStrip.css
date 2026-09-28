@@ -1,0 +1,103 @@
+.proof {
+  position: relative;
+  overflow: hidden;
+  background: var(--charcoal);
+  color: var(--offwhite);
+}
+
+.proof__glow {
+  position: absolute;
+  inset: auto auto -60% 50%;
+  width: min(900px, 130vw);
+  aspect-ratio: 1;
+  transform: translateX(-60%);
+  background: radial-gradient(
+    closest-side,
+    rgba(59, 63, 159, 0.55),
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.proof__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: var(--space-8);
+  padding-block: var(--space-9);
+}
+
+.proof__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.proof__stat-value {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 2rem + 5vw, 5rem);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+
+.proof__stat-label {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  color: var(--charcoal-300);
+}
+
+.proof__quote {
+  margin: 0;
+  padding-inline-start: var(--space-8);
+  border-inline-start: 2px solid rgba(255, 107, 90, 0.55);
+}
+
+.proof__quote blockquote {
+  margin: 0;
+}
+
+.proof__quote p {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1rem + 1.4vw, var(--text-2xl));
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.proof__quote figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.proof__quote-name {
+  font-weight: var(--weight-semibold);
+  color: var(--offwhite);
+}
+
+.proof__quote-role {
+  color: var(--charcoal-400);
+}
+
+@media (max-width: 860px) {
+  .proof__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    padding-block: var(--space-8);
+  }
+
+  .proof__quote {
+    padding-inline-start: 0;
+    padding-block-start: var(--space-5);
+    border-inline-start: 0;
+    border-block-start: 2px solid rgba(255, 107, 90, 0.55);
+  }
+}
