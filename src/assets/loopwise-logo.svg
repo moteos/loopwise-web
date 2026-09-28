@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="160" viewBox="0 0 560 160" role="img" aria-label="Loopwise">
+  <title>Loopwise</title>
+  <!-- Mark: a looping arrow that closes into a speech bubble tail. -->
+  <g transform="translate(16 16)">
+    <path d="M64 8a56 56 0 1 1-44.6 89.9L6 124l6.4-34.3A56 56 0 0 1 64 8z" fill="#3B3F9F"/>
+    <path d="M64 34a30 30 0 1 0 30 30" fill="none" stroke="#F7F5F0" stroke-width="12" stroke-linecap="round"/>
+    <path d="M81 74l13-13 13 13" fill="none" stroke="#F7F5F0" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="64" cy="64" r="9" fill="#FF6B5A"/>
+  </g>
+  <!-- Wordmark. -->
+  <text x="160" y="104" font-family="Inter, 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-2" fill="#1F2033">loopwise</text>
+</svg>
