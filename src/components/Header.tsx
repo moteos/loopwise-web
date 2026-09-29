@@ -16,6 +16,7 @@ export default function Header() {
           <Link to="/#how-it-works">Features</Link>
           <Link to="/#pricing">Pricing</Link>
           <Link
+            className="site-header__link--insights"
             to="/insights"
             aria-current={pathname === '/insights' ? 'page' : undefined}
           >
